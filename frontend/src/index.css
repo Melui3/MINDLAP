@@ -1,0 +1,28 @@
+@import "tailwindcss";
+
+:root{
+  color-scheme: dark;
+
+  /* Base */
+  --bg: 9 9 11;
+  --panel: 15 15 18;
+  --border: 32 32 36;
+
+  --text: 244 244 245;
+  --muted: 161 161 170;
+
+  /* Ferrari */
+  --ferrari: 220 38 38;
+  --ferrari-dark: 185 28 28;
+  --ferrari-yellow: 250 204 21;
+}
+
+body {
+  font-family: 'Inter', sans-serif;
+}
+
+.font-display {
+  font-family: 'Bebas Neue', sans-serif;
+  letter-spacing: 0.04em;
+}
+
