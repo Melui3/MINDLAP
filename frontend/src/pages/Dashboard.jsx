@@ -12,31 +12,7 @@ import {
   CartesianGrid,
 } from "recharts";
 
-// ---- Fake sessions data (placeholder until API exists) ----
-const FAKE_SESSIONS = {
-  nextRace: {
-    round: 4,
-    name: "Bahrain Grand Prix",
-    circuit: "Bahrain International Circuit",
-    date: "2026-03-08",
-  },
-  lastWeekend: {
-    gp: "Saudi Arabian Grand Prix",
-    circuit: "Jeddah Corniche Circuit",
-    sessions: {
-      FP1: { bestLap: "1:29.742", pos: 6 },
-      FP2: { bestLap: "1:29.201", pos: 4 },
-      FP3: { bestLap: "1:28.988", pos: 5 },
-      Q: { bestLap: "1:27.940", pos: 3 },
-      R: { pos: 2, points: 18, fastestLap: false, status: "Finished" },
-    },
-    championship: {
-      position: 2,
-      points: 62,
-      gapToP1: 11,
-    },
-  },
-};
+
 
 function formatDay(iso) {
   if (!iso) return "";
@@ -97,6 +73,10 @@ function coachSummary({ avg30, deltas, mri }) {
   return bullets.slice(0, 4);
 }
 
+function getSession(weekend, type) {
+  return (weekend?.sessions || []).find((s) => s.type === type) || null;
+}
+
 export default function Dashboard() {
   const [me, setMe] = useState(null);
 
@@ -118,6 +98,9 @@ export default function Dashboard() {
 
   const [err, setErr] = useState("");
   const [loading, setLoading] = useState(true);
+
+  const [nextRace, setNextRace] = useState(null);
+  const [lastWeekend, setLastWeekend] = useState(null);
 
   const isAdmin = !!me?.is_staff;
 
@@ -158,6 +141,23 @@ export default function Dashboard() {
       const data = await c.json();
       const items = Array.isArray(data) ? data : (data.results ?? []);
       setCheckinsRaw(items);
+
+            // 6) sessions (next + last weekend)
+      const n = await apiFetch(`/sessions/next/${qAs}`, { method: "GET" });
+      if (n.ok) setNextRace(await n.json());
+      else setNextRace(null);
+
+      const w = await apiFetch(`/sessions/${qAs}`, { method: "GET" });
+      if (w.ok) {
+        const list = await w.json();
+        const arr = Array.isArray(list) ? list : [];
+        // last completed weekend = last item in ordering (depends on backend ordering)
+        // if your API returns ascending, keep last; if descending, keep first
+        const lw = arr.length ? arr[arr.length - 1] : null;
+        setLastWeekend(lw);
+      } else {
+        setLastWeekend(null);
+}
 
       const latest = items?.[0];
       setAdminComment(latest?.admin_comment ?? "");
@@ -357,11 +357,14 @@ export default function Dashboard() {
         <div className="flex flex-col lg:flex-row lg:items-center lg:justify-between gap-4">
           <div className="flex items-center gap-4">
             <div className="h-16 w-16 rounded-3xl overflow-hidden border border-[rgb(var(--border))] bg-[rgb(var(--bg))] grid place-items-center">
-              {profile?.avatar_url ? (
-                <img src={profile.avatar_url} alt="Pilot avatar" className="h-full w-full object-cover" />
-              ) : (
+              <img
+                    src="/noah.jpg"
+                    alt="Noah"
+                    className="h-full w-full object-cover"
+                  />
+              
                 <span className="font-display text-3xl text-[rgb(var(--muted))]">NV</span>
-              )}
+              
             </div>
 
             <div>
@@ -394,8 +397,13 @@ export default function Dashboard() {
               <div className="text-xs uppercase tracking-wider text-[rgb(var(--muted))]">Team</div>
               <div className="mt-1 font-semibold">Ferrari</div>
             </div>
-            <div className="h-12 w-12 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--bg))] grid place-items-center">
-              <span className="font-display text-2xl text-[rgb(var(--ferrari))]">SF</span>
+            <div className="h-20 w-18 rounded-3xl overflow-hidden border border-[rgb(var(--border))] bg-[rgb(var(--bg))] grid place-items-center">
+              <img
+              src="/ferrari.jpg"
+              alt="Ferrari"
+              className="h-full w-full object-cover"
+            />
+              
             </div>
           </div>
         </div>
@@ -630,121 +638,136 @@ export default function Dashboard() {
       </div>
 
       {/* Sessions */}
-      <div className="mt-6 rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4">
-        <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
-          <div>
-            <div className="text-sm font-semibold">Sessions</div>
-            <div className="text-xs text-[rgb(var(--muted))]">
-              Practice • Qualifying • Race • Championship
-            </div>
-          </div>
+<div className="mt-6 rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4">
+  <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
+    <div>
+      <div className="text-sm font-semibold">Sessions</div>
+      <div className="text-xs text-[rgb(var(--muted))]">
+        Practice • Qualifying • Race • Championship
+      </div>
+    </div>
 
-          <button
-            className="px-3 py-2 rounded-xl bg-[rgb(var(--panel))] border border-[rgb(var(--border))] hover:bg-black/20 text-sm"
-            onClick={() => {}}
-            title="Coming soon"
-          >
-            Open Sessions (soon)
-          </button>
+    <button
+      className="px-3 py-2 rounded-xl bg-[rgb(var(--panel))] border border-[rgb(var(--border))] hover:bg-black/20 text-sm"
+      onClick={() => (window.location.href = "/sessions")}
+      title="Open the dedicated Sessions page"
+    >
+      Open Sessions
+    </button>
+  </div>
+
+  {/* Next race */}
+  <div className="mt-4 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--bg))] p-4">
+    <div className="flex items-center justify-between">
+      <div className="text-sm font-semibold">Next race</div>
+      <Pill>{nextRace ? `Round ${nextRace.round}` : "—"}</Pill>
+    </div>
+
+    {nextRace ? (
+      <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-[rgb(var(--muted))]">
+        <span className="text-[rgb(var(--text))] font-semibold">{nextRace.gp_name}</span>
+        <span>•</span>
+        <span>{nextRace.circuit?.name}</span>
+        <span>•</span>
+        <span>{nextRace.start_date}</span>
+      </div>
+    ) : (
+      <div className="mt-2 text-sm text-[rgb(var(--muted))]">No upcoming race found.</div>
+    )}
+  </div>
+
+  {/* Last weekend */}
+  <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
+    <div className="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--bg))] p-4 lg:col-span-2">
+      <div className="flex items-center justify-between">
+        <div>
+          <div className="text-sm font-semibold">Last weekend</div>
+          <div className="text-xs text-[rgb(var(--muted))]">
+            {lastWeekend ? `${lastWeekend.gp_name} • ${lastWeekend.circuit?.name}` : "—"}
+          </div>
         </div>
+        <ToneBadge tone="muted">{lastWeekend ? `R${lastWeekend.round}` : "—"}</ToneBadge>
+      </div>
 
-        <div className="mt-4 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--bg))] p-4">
-          <div className="flex items-center justify-between">
-            <div className="text-sm font-semibold">Next race</div>
-            <Pill>Round {FAKE_SESSIONS.nextRace.round}</Pill>
-          </div>
-          <div className="mt-2 flex flex-wrap items-center gap-2 text-sm text-[rgb(var(--muted))]">
-            <span className="text-[rgb(var(--text))] font-semibold">{FAKE_SESSIONS.nextRace.name}</span>
-            <span>•</span>
-            <span>{FAKE_SESSIONS.nextRace.circuit}</span>
-            <span>•</span>
-            <span>{FAKE_SESSIONS.nextRace.date}</span>
-          </div>
-        </div>
-
-        <div className="mt-4 grid grid-cols-1 lg:grid-cols-3 gap-4">
-          <div className="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--bg))] p-4 lg:col-span-2">
-            <div className="flex items-center justify-between">
-              <div>
-                <div className="text-sm font-semibold">Last weekend</div>
-                <div className="text-xs text-[rgb(var(--muted))]">
-                  {FAKE_SESSIONS.lastWeekend.gp} • {FAKE_SESSIONS.lastWeekend.circuit}
-                </div>
-              </div>
-              <ToneBadge tone="muted">{FAKE_SESSIONS.lastWeekend.sessions.R.status}</ToneBadge>
-            </div>
-
-            <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3">
-              {["FP1", "FP2", "FP3"].map((k) => (
+      {lastWeekend ? (
+        <>
+          <div className="mt-4 grid grid-cols-2 md:grid-cols-3 gap-3">
+            {["FP1", "FP2", "FP3"].map((k) => {
+              const s = getSession(lastWeekend, k);
+              const r = s?.result;
+              return (
                 <div key={k} className="rounded-2xl border border-[rgb(var(--border))] bg-black/10 p-3">
                   <div className="text-xs text-[rgb(var(--muted))]">{k}</div>
                   <div className="mt-1 text-sm">
-                    <span className="font-semibold text-[rgb(var(--text))]">
-                      {FAKE_SESSIONS.lastWeekend.sessions[k].bestLap}
-                    </span>
-                    <span className="text-[rgb(var(--muted))]"> • P{FAKE_SESSIONS.lastWeekend.sessions[k].pos}</span>
+                    <span className="font-semibold text-[rgb(var(--text))]">{r?.best_lap || "—"}</span>
+                    <span className="text-[rgb(var(--muted))]"> • P{r?.position ?? "—"}</span>
                   </div>
                 </div>
-              ))}
+              );
+            })}
 
-              <div className="rounded-2xl border border-[rgb(var(--border))] bg-black/10 p-3">
-                <div className="text-xs text-[rgb(var(--muted))]">Qualifying</div>
-                <div className="mt-1 text-sm">
-                  <span className="font-semibold text-[rgb(var(--text))]">
-                    {FAKE_SESSIONS.lastWeekend.sessions.Q.bestLap}
-                  </span>
-                  <span className="text-[rgb(var(--muted))]"> • P{FAKE_SESSIONS.lastWeekend.sessions.Q.pos}</span>
+            {(() => {
+              const s = getSession(lastWeekend, "Q");
+              const r = s?.result;
+              return (
+                <div className="rounded-2xl border border-[rgb(var(--border))] bg-black/10 p-3">
+                  <div className="text-xs text-[rgb(var(--muted))]">Qualifying</div>
+                  <div className="mt-1 text-sm">
+                    <span className="font-semibold text-[rgb(var(--text))]">{r?.best_lap || "—"}</span>
+                    <span className="text-[rgb(var(--muted))]"> • P{r?.position ?? "—"}</span>
+                  </div>
                 </div>
-              </div>
+              );
+            })()}
 
-              <div className="rounded-2xl border border-[rgb(var(--border))] bg-black/10 p-3 md:col-span-2">
-                <div className="text-xs text-[rgb(var(--muted))]">Race</div>
-                <div className="mt-1 text-sm flex flex-wrap items-center gap-2">
-                  <span className="font-semibold text-[rgb(var(--text))]">
-                    P{FAKE_SESSIONS.lastWeekend.sessions.R.pos}
-                  </span>
-                  <span className="text-[rgb(var(--muted))]">• {FAKE_SESSIONS.lastWeekend.sessions.R.points} pts</span>
-                  {FAKE_SESSIONS.lastWeekend.sessions.R.fastestLap ? (
-                    <ToneBadge tone="ok">Fastest Lap</ToneBadge>
-                  ) : null}
+            {(() => {
+              const s = getSession(lastWeekend, "R");
+              const r = s?.result;
+              return (
+                <div className="rounded-2xl border border-[rgb(var(--border))] bg-black/10 p-3 md:col-span-2">
+                  <div className="text-xs text-[rgb(var(--muted))]">Race</div>
+                  <div className="mt-1 text-sm flex flex-wrap items-center gap-2">
+                    <span className="font-semibold text-[rgb(var(--text))]">P{r?.position ?? "—"}</span>
+                    <span className="text-[rgb(var(--muted))]">• {r?.points ?? 0} pts</span>
+                    <span className="text-[rgb(var(--muted))]">• {r?.status || "—"}</span>
+                  </div>
                 </div>
-              </div>
-            </div>
+              );
+            })()}
           </div>
+        </>
+      ) : (
+        <div className="mt-4 text-sm text-[rgb(var(--muted))]">
+          No weekends loaded yet.
+        </div>
+      )}
+    </div>
 
-          <div className="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--bg))] p-4">
-            <div className="text-sm font-semibold">Championship</div>
-            <div className="text-xs text-[rgb(var(--muted))]">After last race</div>
+    <div className="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--bg))] p-4">
+      <div className="text-sm font-semibold">Championship</div>
+      <div className="text-xs text-[rgb(var(--muted))]">After last race</div>
 
-            <div className="mt-4 space-y-3 text-sm">
-              <div className="flex items-center justify-between">
-                <span className="text-[rgb(var(--muted))]">Position</span>
-                <span className="font-semibold text-[rgb(var(--text))]">
-                  P{FAKE_SESSIONS.lastWeekend.championship.position}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-[rgb(var(--muted))]">Points</span>
-                <span className="font-semibold text-[rgb(var(--text))]">
-                  {FAKE_SESSIONS.lastWeekend.championship.points}
-                </span>
-              </div>
-
-              <div className="flex items-center justify-between">
-                <span className="text-[rgb(var(--muted))]">Gap to P1</span>
-                <span className="font-semibold text-[rgb(var(--text))]">
-                  {FAKE_SESSIONS.lastWeekend.championship.gapToP1} pts
-                </span>
-              </div>
-
-              <div className="mt-2 rounded-2xl border border-[rgb(var(--border))] bg-black/10 p-3 text-xs text-[rgb(var(--muted))] leading-relaxed">
-                Next step: compute this from stored race results and persist it.
-              </div>
-            </div>
+      {lastWeekend?.wdc ? (
+        <div className="mt-4 space-y-3 text-sm">
+          <div className="flex items-center justify-between">
+            <span className="text-[rgb(var(--muted))]">Position</span>
+            <span className="font-semibold text-[rgb(var(--text))]">P{lastWeekend.wdc.position}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[rgb(var(--muted))]">Points</span>
+            <span className="font-semibold text-[rgb(var(--text))]">{lastWeekend.wdc.points}</span>
+          </div>
+          <div className="flex items-center justify-between">
+            <span className="text-[rgb(var(--muted))]">Gap to P1</span>
+            <span className="font-semibold text-[rgb(var(--text))]">{lastWeekend.wdc.gap_to_p1}</span>
           </div>
         </div>
-      </div>
+      ) : (
+        <div className="mt-4 text-sm text-[rgb(var(--muted))]">No WDC snapshot yet.</div>
+      )}
+    </div>
+  </div>
+</div>
 
       {/* Chart */}
       <div className="mt-6 rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4">
