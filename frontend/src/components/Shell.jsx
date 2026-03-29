@@ -34,22 +34,22 @@ export default function Shell({ children }) {
         <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between gap-4">
           {/* Brand */}
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-[rgb(var(--panel))] border border-[rgb(var(--border))] grid place-items-center font-display text-2xl leading-none">
-              M
+            <div className="h-10 w-10 rounded-2xl bg-[rgb(var(--ferrari))] border border-[rgb(var(--ferrari-dark))] grid place-items-center font-display text-2xl leading-none text-white">
+              N
             </div>
             <div>
-              <div className="text-sm font-display uppercase tracking-[0.3em] text-[rgb(var(--muted))]">
-                Mindlap
+              <div className="text-sm font-display uppercase tracking-[0.3em] text-[rgb(var(--text))]">
+                Nate.Lab
               </div>
-              <div className="mt-1 h-[3px] w-20 bg-[rgb(var(--ferrari))]" />
+              <div className="mt-1 h-[3px] w-20 bg-[rgb(var(--ferrari-yellow))]" />
             </div>
           </div>
 
           {/* Nav */}
           <nav className="flex items-center gap-2">
-            <Nav to="/" label="Dashboard" />
-            <Nav to="/checkins" label="Check-ins" />
-            <Nav to="/sessions" label="Sessions" />
+            <Nav to="/" label="War Room" />
+            <Nav to="/checkins" label="Daily Log" />
+            <Nav to="/sessions" label="Race Data" />
           </nav>
 
           {/* User */}
@@ -63,7 +63,7 @@ export default function Shell({ children }) {
                   </span>
                 ) : null}
               </div>
-              <div className="text-xs text-[rgb(var(--muted))]">Ferrari Lab</div>
+              <div className="text-xs text-[rgb(var(--ferrari-yellow))]">Ferrari Intelligence</div>
             </div>
 
             <button

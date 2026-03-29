@@ -125,11 +125,11 @@ export default function Sessions() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
-          <div className="text-sm font-display uppercase tracking-[0.3em] text-[rgb(var(--muted))]">Sessions</div>
-          <div className="mt-2 text-5xl font-display leading-none">Weekend analysis</div>
+          <div className="text-sm font-display uppercase tracking-[0.3em] text-[rgb(var(--ferrari-yellow))]">Race Data</div>
+          <div className="mt-2 text-5xl font-display leading-none">Race Intel</div>
           <div className="mt-3 h-[3px] w-24 bg-[rgb(var(--ferrari))]" />
           <div className="mt-4 text-sm text-[rgb(var(--muted))]">
-            Practice • Qualifying • Race • Championship
+            Every session. Every lap. Every position. Nothing escapes Nate.
           </div>
         </div>
 
@@ -174,7 +174,7 @@ export default function Sessions() {
       {/* Top row: next race + season snapshot */}
       <div className="mt-6 grid grid-cols-1 lg:grid-cols-3 gap-4">
         <Card
-          title="Next race"
+          title="INCOMING RACE"
           subtitle={nextRace ? `Round ${nextRace.round} • ${nextRace.start_date}` : "—"}
           right={nextRace?.circuit?.name ? <Pill>{nextRace.circuit.name}</Pill> : null}
         >
@@ -191,7 +191,7 @@ export default function Sessions() {
         </Card>
 
         <Card
-          title="Season snapshot"
+          title="SEASON NUMBERS"
           subtitle={isAdmin ? `Target: ${activeAs || "self"} • Logged: ${user?.username}` : `Logged: ${user?.username}`}
         >
           <div className="grid grid-cols-2 gap-3 text-sm">
@@ -222,7 +222,7 @@ export default function Sessions() {
           </div>
         </Card>
 
-        <Card title="Championship" subtitle="Driver standings (current)">
+        <Card title="WDC STANDING" subtitle="Driver standings — current">
           {seasonStats.wdc ? (
             <div className="text-sm text-[rgb(var(--muted))] leading-relaxed">
               Current: <span className="font-semibold text-[rgb(var(--text))]">P{seasonStats.wdc.position}</span>{" "}
@@ -246,11 +246,11 @@ export default function Sessions() {
       <div className="mt-6 grid grid-cols-1 gap-4">
         {!loading && !weekends.length ? (
           <Card
-            title="No results loaded"
-            subtitle={isAdmin ? "You’re admin: load Noah (view-as) to see seeded data." : "No data for this user."}
+            title="NO DATA LOADED"
+            subtitle={isAdmin ? "You’re Nate — load Noah to access the data." : "No data for this pilot."}
           >
             <div className="text-sm text-[rgb(var(--muted))]">
-              If you seeded for <b>noah</b>, click the <b>Noah</b> button.
+              If you seeded for <b>noah</b>, hit the <b>Noah</b> button. Nate needs the data.
             </div>
           </Card>
         ) : null}

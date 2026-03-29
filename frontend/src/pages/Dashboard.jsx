@@ -60,15 +60,15 @@ function Pill({ children }) {
 function coachSummary({ avg30, deltas, mri }) {
   const bullets = [];
 
-  if (mri == null) bullets.push("Not enough data yet — keep logging daily check-ins.");
-  else if (mri >= 35) bullets.push("High mental load detected. Protect sleep and reduce intensity.");
-  else if (mri >= 20) bullets.push("Load creeping up. Tighten recovery routines and simplify sessions.");
-  else bullets.push("Baseline looks stable. Keep the routine consistent and push technical work.");
+  if (mri == null) bullets.push("No data yet. I can't work with nothing — log every day, no exceptions.");
+  else if (mri >= 35) bullets.push(`MRI at ${mri}. Noah is in the red. This is not acceptable. Sleep locked, intensity down, now.`);
+  else if (mri >= 20) bullets.push(`MRI at ${mri}. Load is creeping. I'm watching. Tighten recovery, cut the noise.`);
+  else bullets.push(`MRI at ${mri}. Baseline clean. Don't get comfortable — keep the routine and push technical work.`);
 
-  if (deltas.stress != null && deltas.stress >= 10) bullets.push("Stress trending up over the last 7 days.");
-  if (deltas.fatigue != null && deltas.fatigue >= 10) bullets.push("Fatigue increased recently — plan a deload day.");
-  if (deltas.sleep != null && deltas.sleep <= -8) bullets.push("Sleep dropped — lock a fixed bedtime window.");
-  if (avg30.focus != null && avg30.focus >= 80) bullets.push("Focus is strong — good window for high-skill practice.");
+  if (deltas.stress != null && deltas.stress >= 10) bullets.push(`Stress vector up ${deltas.stress}% over 7 days. I've flagged it. Noah needs to know.`);
+  if (deltas.fatigue != null && deltas.fatigue >= 10) bullets.push(`Fatigue spiking. ${deltas.fatigue}% above 30d average. Schedule a deload — not optional.`);
+  if (deltas.sleep != null && deltas.sleep <= -8) bullets.push(`Sleep collapsed ${Math.abs(deltas.sleep)}% this week. Fixed bedtime window. Non-negotiable.`);
+  if (avg30.focus != null && avg30.focus >= 80) bullets.push(`Focus at ${avg30.focus} avg. Peak window. This is when we do the hard technical work.`);
 
   return bullets.slice(0, 4);
 }
@@ -284,13 +284,13 @@ export default function Dashboard() {
       {/* Top bar */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
-          <div className="text-sm font-display uppercase tracking-[0.3em] text-[rgb(var(--muted))]">
-            Dashboard
+          <div className="text-sm font-display uppercase tracking-[0.3em] text-[rgb(var(--ferrari-yellow))]">
+            War Room
           </div>
           <div className="mt-2 text-5xl font-display leading-none">
             {profile?.alias ?? "Pilot"}
           </div>
-          <div className="mt-3 h-[3px] w-24 bg-[rgb(var(--ferrari))]" />
+          <div className="mt-3 h-[3px] w-24 bg-[rgb(var(--ferrari-yellow))]" />
           <div className="mt-4 text-sm text-[rgb(var(--muted))]">
             Range (30d): {summary30?.from ?? "—"} → {summary30?.to ?? "—"} • {summary30?.count ?? "—"} check-ins
           </div>
@@ -493,12 +493,12 @@ export default function Dashboard() {
         <StatCard label="Consistency (30d)" value={consistency30 != null ? `${consistency30}%` : "—"} hint="check-ins / 30" />
       </div>
 
-      {/* Coach summary */}
-      <div className="mt-6 rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4">
+      {/* Nate's Read */}
+      <div className="mt-6 rounded-3xl border border-[rgb(var(--ferrari-dark)/0.6)] bg-[rgb(var(--panel))] p-4">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold">Coach summary</div>
-            <div className="text-xs text-[rgb(var(--muted))]">Auto-generated from last 30 days</div>
+            <div className="text-sm font-semibold text-[rgb(var(--ferrari-yellow))]">NATE'S READ</div>
+            <div className="text-xs text-[rgb(var(--muted))]">30d data crunch — Nate's analysis</div>
           </div>
           <ToneBadge tone={mriBadge.tone}>{mriBadge.label}</ToneBadge>
         </div>
@@ -513,10 +513,10 @@ export default function Dashboard() {
         </ul>
       </div>
 
-      {/* Alerts */}
+      {/* Nate's Alerts */}
       {alerts.length ? (
-        <div className="mt-6 rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4">
-          <div className="text-sm font-semibold">Alerts</div>
+        <div className="mt-6 rounded-3xl border border-[rgb(var(--ferrari-dark)/0.6)] bg-[rgb(var(--panel))] p-4">
+          <div className="text-sm font-semibold text-[rgb(var(--ferrari))]">⚡ NATE'S ALERTS</div>
           <div className="mt-3 flex flex-col gap-2">
             {alerts.map((x, i) => (
               <div key={i} className="flex items-center justify-between rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--bg))] p-3">
@@ -533,8 +533,8 @@ export default function Dashboard() {
         <div className="rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4 lg:col-span-2">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-semibold">Trend (7d vs 30d)</div>
-              <div className="text-xs text-[rgb(var(--muted))]">Positive/negative % change</div>
+              <div className="text-sm font-semibold">TREND DISSECTION</div>
+              <div className="text-xs text-[rgb(var(--muted))]">7d vs 30d — positive/negative % delta</div>
             </div>
             <ToneBadge tone="muted">7d vs 30d</ToneBadge>
           </div>
@@ -557,8 +557,8 @@ export default function Dashboard() {
         </div>
 
         <div className="rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4">
-          <div className="text-sm font-semibold">Objectives</div>
-          <div className="text-xs text-[rgb(var(--muted))]">From pilot profile goals</div>
+          <div className="text-sm font-semibold">MISSION TARGETS</div>
+          <div className="text-xs text-[rgb(var(--muted))]">From pilot profile — non-negotiable</div>
 
           <div className="mt-4 flex flex-wrap gap-2">
             {goalsList.length ? goalsList.map((g) => (
@@ -575,7 +575,7 @@ export default function Dashboard() {
         <div className="rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-semibold">Latest check-in</div>
+              <div className="text-sm font-semibold">LAST SIGNAL</div>
               <div className="text-xs text-[rgb(var(--muted))]">
                 {latest?.date ?? "—"} • {(latest?.tags || []).join(", ") || "no tags"}
               </div>
@@ -598,11 +598,11 @@ export default function Dashboard() {
         </div>
 
         <div className="rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4">
-          <div className="text-sm font-semibold">Admin comments</div>
-          <div className="text-xs text-[rgb(var(--muted))]">Internal coaching note (staff only)</div>
+          <div className="text-sm font-semibold text-[rgb(var(--ferrari-yellow))]">NATE'S NOTES</div>
+          <div className="text-xs text-[rgb(var(--muted))]">Private field notes. For my eyes only.</div>
 
           {!isAdmin ? (
-            <div className="mt-4 text-sm text-[rgb(var(--muted))]">You are not staff.</div>
+            <div className="mt-4 text-sm text-[rgb(var(--muted))]">Access denied. You're not Nate.</div>
           ) : (
             <>
               <textarea
@@ -610,7 +610,7 @@ export default function Dashboard() {
                 className="mt-4 w-full rounded-xl bg-[rgb(var(--bg))] border border-[rgb(var(--border))] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[rgb(var(--ferrari)/0.35)]"
                 value={adminComment}
                 onChange={(e) => setAdminComment(e.target.value)}
-                placeholder="Write coaching notes…"
+                placeholder="Write field notes. Be precise. Details matter."
               />
 
               <div className="mt-3 flex gap-2">
@@ -641,9 +641,9 @@ export default function Dashboard() {
 <div className="mt-6 rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4">
   <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
     <div>
-      <div className="text-sm font-semibold">Sessions</div>
+      <div className="text-sm font-semibold">RACE INTEL</div>
       <div className="text-xs text-[rgb(var(--muted))]">
-        Practice • Qualifying • Race • Championship
+        Every session. Every lap. Every position.
       </div>
     </div>
 
@@ -659,7 +659,7 @@ export default function Dashboard() {
   {/* Next race */}
   <div className="mt-4 rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--bg))] p-4">
     <div className="flex items-center justify-between">
-      <div className="text-sm font-semibold">Next race</div>
+      <div className="text-sm font-semibold">INCOMING RACE</div>
       <Pill>{nextRace ? `Round ${nextRace.round}` : "—"}</Pill>
     </div>
 
@@ -681,7 +681,7 @@ export default function Dashboard() {
     <div className="rounded-2xl border border-[rgb(var(--border))] bg-[rgb(var(--bg))] p-4 lg:col-span-2">
       <div className="flex items-center justify-between">
         <div>
-          <div className="text-sm font-semibold">Last weekend</div>
+          <div className="text-sm font-semibold">LAST DEBRIEF</div>
           <div className="text-xs text-[rgb(var(--muted))]">
             {lastWeekend ? `${lastWeekend.gp_name} • ${lastWeekend.circuit?.name}` : "—"}
           </div>

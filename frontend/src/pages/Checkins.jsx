@@ -161,13 +161,13 @@ export default function Checkins() {
       {/* Header */}
       <div className="flex flex-col md:flex-row md:items-end md:justify-between gap-4">
         <div>
-          <div className="text-sm font-display uppercase tracking-[0.3em] text-[rgb(var(--muted))]">
-            Check-ins
+          <div className="text-sm font-display uppercase tracking-[0.3em] text-[rgb(var(--ferrari-yellow))]">
+            Daily Log
           </div>
-          <div className="mt-2 text-5xl font-display leading-none">Daily log</div>
+          <div className="mt-2 text-5xl font-display leading-none">Noah's Signal</div>
           <div className="mt-3 h-[3px] w-24 bg-[rgb(var(--ferrari))]" />
           <div className="mt-4 text-sm text-[rgb(var(--muted))]">
-            Track focus, stress, confidence, fatigue and sleep — build consistency.
+            Every number matters. Nate is watching. Log it all.
           </div>
         </div>
 
@@ -221,8 +221,8 @@ export default function Checkins() {
       <div className="mt-6 rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4">
         <div className="flex items-center justify-between">
           <div>
-            <div className="text-sm font-semibold">New check-in</div>
-            <div className="text-xs text-[rgb(var(--muted))]">0–100 scale</div>
+            <div className="text-sm font-semibold text-[rgb(var(--ferrari-yellow))]">NEW SIGNAL</div>
+            <div className="text-xs text-[rgb(var(--muted))]">0–100 scale — be honest</div>
           </div>
 
           <div className="flex items-center gap-2">
@@ -297,13 +297,13 @@ export default function Checkins() {
               className="mt-1 w-full rounded-xl bg-[rgb(var(--bg))] border border-[rgb(var(--border))] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[rgb(var(--ferrari)/0.35)]"
               value={notes}
               onChange={(e) => setNotes(e.target.value)}
-              placeholder="What impacted your performance today?"
+              placeholder="What happened today? Don't skip details. Nate reads everything."
             />
           </div>
 
           <div className="md:col-span-2 flex items-center justify-between gap-3">
             <div className="text-xs text-[rgb(var(--muted))]">
-              Tip: log daily to improve the Consistency score.
+              Miss one day, miss a data point. Don't miss.
             </div>
 
             <button
@@ -321,9 +321,9 @@ export default function Checkins() {
       <div className="mt-6 rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4">
         <div className="flex flex-col md:flex-row md:items-center md:justify-between gap-3">
           <div>
-            <div className="text-sm font-semibold">History</div>
+            <div className="text-sm font-semibold">SIGNAL LOG</div>
             <div className="text-xs text-[rgb(var(--muted))]">
-              {loading ? "Loading…" : `${filtered.length} shown • ${items.length} total`}
+              {loading ? "Loading…" : `${filtered.length} shown • ${items.length} total — Nate has it all`}
             </div>
           </div>
 
@@ -384,7 +384,7 @@ export default function Checkins() {
 
               {isAdmin && x.admin_comment ? (
                 <div className="mt-3 text-sm text-red-200 border border-red-900/40 bg-red-950/20 rounded-2xl p-3">
-                  <div className="text-xs uppercase tracking-wider opacity-80">Admin note</div>
+                  <div className="text-xs uppercase tracking-wider opacity-80">Nate's note</div>
                   <div className="mt-1">{x.admin_comment}</div>
                 </div>
               ) : null}
@@ -404,7 +404,7 @@ export default function Checkins() {
         <div className="mt-6 rounded-3xl border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4">
           <div className="flex items-center justify-between">
             <div>
-              <div className="text-sm font-semibold">Latest</div>
+              <div className="text-sm font-semibold">LAST SIGNAL</div>
               <div className="text-xs text-[rgb(var(--muted))]">{latest.date}</div>
             </div>
             <ToneBadge tone="muted">{(latest.tags || []).join(", ") || "no tags"}</ToneBadge>
