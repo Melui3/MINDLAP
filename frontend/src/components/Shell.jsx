@@ -11,16 +11,20 @@ export default function Shell({ children }) {
     return loc.pathname === to || loc.pathname.startsWith(to + "/");
   };
 
-  const Nav = ({ to, label }) => {
+  const Nav = ({ to, label, danger = false }) => {
     const active = isActive(to);
     return (
       <Link
         to={to}
         className={[
-          "px-3 py-2 rounded-xl text-sm transition border",
-          active
-            ? "bg-[rgb(var(--panel))] border-[rgb(var(--border))] text-[rgb(var(--text))]"
-            : "border-transparent text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:bg-[rgb(var(--panel))]",
+          "px-3 py-1.5 text-sm font-mono tracking-wider transition border-b-2",
+          danger
+            ? active
+              ? "border-red-600 text-red-400"
+              : "border-transparent text-red-800 hover:text-red-500"
+            : active
+            ? "border-[rgb(var(--gold))] text-[rgb(var(--text))]"
+            : "border-transparent text-[rgb(var(--muted))] hover:text-[rgb(var(--text))]",
         ].join(" ")}
       >
         {label}
@@ -30,53 +34,37 @@ export default function Shell({ children }) {
 
   return (
     <div className="min-h-screen bg-[rgb(var(--bg))] text-[rgb(var(--text))]">
-      <header className="sticky top-0 z-10 border-b border-[rgb(var(--border))] bg-[rgb(var(--bg)/0.8)] backdrop-blur">
-        <div className="mx-auto max-w-5xl px-4 py-3 flex items-center justify-between gap-4">
-          {/* Brand */}
+      <header className="sticky top-0 z-10 border-b border-[rgb(var(--border))] bg-[rgb(var(--bg)/0.92)] backdrop-blur">
+        <div className="mx-auto max-w-4xl px-4 py-3 flex items-center justify-between gap-4">
+
           <div className="flex items-center gap-3">
-            <div className="h-10 w-10 rounded-2xl bg-[rgb(var(--ferrari))] border border-[rgb(var(--ferrari-dark))] grid place-items-center font-display text-2xl leading-none text-white">
-              N
+            <div className="text-xs font-mono text-[rgb(var(--muted))]">SYS://</div>
+            <div className="font-display text-lg tracking-wide text-[rgb(var(--text))]">
+              Telemetry
             </div>
-            <div>
-              <div className="text-sm font-display uppercase tracking-[0.3em] text-[rgb(var(--text))]">
-                Nate.Lab
-              </div>
-              <div className="mt-1 h-[3px] w-20 bg-[rgb(var(--ferrari-yellow))]" />
-            </div>
+            <div className="h-[2px] w-8 bg-[rgb(var(--gold))]" />
           </div>
 
-          {/* Nav */}
-          <nav className="flex items-center gap-2">
-            <Nav to="/" label="War Room" />
-            <Nav to="/checkins" label="Daily Log" />
-            <Nav to="/sessions" label="Race Data" />
+          <nav className="flex items-center gap-1">
+            <Nav to="/" label="Déclencheurs" />
+            <Nav to="/log" label="Logger" />
+            <Nav to="/history" label="Historique" />
+            <Nav to="/sos" label="⚠ SOS" danger />
           </nav>
 
-          {/* User */}
           <div className="flex items-center gap-3">
-            <div className="text-right leading-tight">
-              <div className="text-sm font-semibold flex items-center justify-end gap-2">
-                <span>{user?.username ?? "—"}</span>
-                {user?.is_staff ? (
-                  <span className="text-[10px] px-2 py-1 rounded-full border border-[rgb(var(--border))] bg-[rgb(var(--panel))] text-[rgb(var(--muted))]">
-                    ADMIN
-                  </span>
-                ) : null}
-              </div>
-              <div className="text-xs text-[rgb(var(--ferrari-yellow))]">Ferrari Intelligence</div>
-            </div>
-
+            <div className="text-xs font-mono text-[rgb(var(--muted))]">{user?.username}</div>
             <button
               onClick={logout}
-              className="px-3 py-2 rounded-xl bg-[rgb(var(--panel))] border border-[rgb(var(--border))] hover:bg-black/20 text-sm"
+              className="text-xs font-mono text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] border border-[rgb(var(--border))] px-3 py-1.5 transition"
             >
-              Logout
+              Quitter
             </button>
           </div>
         </div>
       </header>
 
-      <main className="mx-auto max-w-5xl px-4 py-8">{children}</main>
+      <main className="mx-auto max-w-4xl px-4 py-8">{children}</main>
     </div>
   );
 }

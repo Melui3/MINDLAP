@@ -46,6 +46,7 @@ INSTALLED_APPS = [
     "accounts",
     "tracking",
     "insights",
+    "mental",
 ]
 
 MIDDLEWARE = [
