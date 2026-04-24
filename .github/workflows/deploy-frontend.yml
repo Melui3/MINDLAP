@@ -36,9 +36,6 @@ jobs:
       - name: Build
         working-directory: frontend
         env:
-          # Set in repo Settings → Secrets → Actions
-          VITE_API_BASE_URL: ${{ secrets.VITE_API_BASE_URL }}
-          # Must match the repo name for GitHub Pages
           VITE_BASE_PATH: /MINDLAP/
         run: npm run build
 
