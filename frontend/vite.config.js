@@ -7,4 +7,6 @@ export default defineConfig({
     react(),
     tailwindcss(),
   ],
+  // VITE_BASE_PATH is set by CI for GitHub Pages (/MINDLAP/), empty in dev
+  base: process.env.VITE_BASE_PATH ?? '/',
 })
