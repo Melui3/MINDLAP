@@ -8,7 +8,10 @@ load_dotenv(BASE_DIR / ".env")
 
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret")
 DEBUG = os.getenv("DJANGO_DEBUG", "0") == "1"
-ALLOWED_HOSTS = os.getenv("DJANGO_ALLOWED_HOSTS", "127.0.0.1,localhost").split(",")
+ALLOWED_HOSTS = os.getenv(
+    "DJANGO_ALLOWED_HOSTS",
+    "127.0.0.1,localhost,honest-lindsay-honeygroup-9962c2de.koyeb.app",
+).split(",")
 
 INSTALLED_APPS = [
     "django.contrib.admin",
@@ -97,9 +100,6 @@ REST_FRAMEWORK = {
     ),
 }
 
-CORS_ALLOWED_ORIGINS = (
-    os.getenv("CORS_ALLOWED_ORIGINS", "").split(",")
-    if os.getenv("CORS_ALLOWED_ORIGINS")
-    else []
-)
+_cors_raw = os.getenv("CORS_ALLOWED_ORIGINS", "https://melui3.github.io")
+CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_raw.split(",") if o.strip()]
 CORS_ALLOW_CREDENTIALS = True
