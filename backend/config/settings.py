@@ -22,8 +22,6 @@ INSTALLED_APPS = [
     "corsheaders",
 
     "accounts",
-    "tracking",
-    "insights",
     "mental",
 ]
 

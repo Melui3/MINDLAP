@@ -131,18 +131,28 @@ export default function History() {
             <div
               key={log.id}
               className="border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-4"
-              style={{ borderLeft: `3px solid ${CAT_COLORS[log.trigger_category] || "rgb(var(--border))"}` }}
+              style={{
+                borderLeft: log.trigger_is_positive
+                  ? "3px solid rgb(var(--emerald))"
+                  : `3px solid ${CAT_COLORS[log.trigger_category] || "rgb(var(--border))"}`,
+              }}
             >
               <div className="flex items-start justify-between gap-3">
                 <div className="flex-1 min-w-0">
                   <div className="flex flex-wrap items-center gap-3 mb-2">
                     <span className="font-display text-[rgb(var(--text))]">{log.trigger_name}</span>
-                    <span
-                      className="text-xs font-mono px-2 py-0.5"
-                      style={{ background: CAT_COLORS[log.trigger_category] + "25", color: CAT_COLORS[log.trigger_category] }}
-                    >
-                      {log.trigger_category?.toUpperCase()}
-                    </span>
+                    {log.trigger_is_positive ? (
+                      <span className="text-xs font-mono px-2 py-0.5" style={{ background: "rgb(var(--emerald)/0.2)", color: "rgb(var(--emerald))" }}>
+                        ANCRE · {log.trigger_category?.toUpperCase()}
+                      </span>
+                    ) : (
+                      <span
+                        className="text-xs font-mono px-2 py-0.5"
+                        style={{ background: CAT_COLORS[log.trigger_category] + "25", color: CAT_COLORS[log.trigger_category] }}
+                      >
+                        {log.trigger_category?.toUpperCase()}
+                      </span>
+                    )}
                   </div>
                   <IntensityDots value={log.intensity} />
                   {log.notes && (

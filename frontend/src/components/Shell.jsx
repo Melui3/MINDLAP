@@ -47,6 +47,7 @@ export default function Shell({ children }) {
 
           <nav className="flex items-center gap-1">
             <Nav to="/" label="Déclencheurs" />
+            <Nav to="/anchors" label="Ancres" />
             <Nav to="/log" label="Logger" />
             <Nav to="/history" label="Historique" />
             <Nav to="/sos" label="⚠ SOS" danger />

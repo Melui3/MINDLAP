@@ -14,6 +14,7 @@ class Trigger(models.Model):
     reaction = models.TextField(blank=True)
     tools = models.JSONField(default=list)
     is_default = models.BooleanField(default=False)
+    is_positive = models.BooleanField(default=False)
     created_at = models.DateTimeField(auto_now_add=True)
 
     class Meta:

@@ -2,27 +2,19 @@ import React, { useEffect, useState, useMemo } from "react";
 import Shell from "../components/Shell";
 import { apiFetch } from "../api/apiFetch";
 
-const CATEGORIES = ["Tous", "Mémoire", "Estime", "Relations", "Surcharge", "Identité", "Physique", "Urgence"];
+const CATEGORIES = ["Tous", "Créativité", "Social", "Efficacité", "Corps", "Présence", "Estime", "Identité"];
 
 const CAT_COLORS = {
-  "Mémoire": "#c87832",
-  "Estime": "#962020",
-  "Relations": "#6b2a8a",
-  "Surcharge": "#1e5a8a",
-  "Identité": "#2e6e38",
-  "Physique": "#166050",
-  "Urgence": "#b01820",
+  "Créativité": "#2e7d5a",
+  "Social":     "#2e6e8a",
+  "Efficacité": "#4e7a2e",
+  "Corps":      "#5a6e20",
+  "Présence":   "#3a6e5a",
+  "Estime":     "#4e5a8a",
+  "Identité":   "#6a4e8a",
 };
 
-const PRECURSOR_CHAIN = [
-  { level: 1, label: "Perte d'envie", color: "#c8a028" },
-  { level: 2, label: "Scroll / fuite", color: "#b86420" },
-  { level: 3, label: "'Ça sert à rien'", color: "#a04010" },
-  { level: 4, label: "Généralisé", color: "#882010" },
-  { level: 5, label: "Dissociation", color: "#601870" },
-];
-
-export default function Triggers() {
+export default function Anchors() {
   const [triggers, setTriggers] = useState([]);
   const [loading, setLoading] = useState(true);
   const [err, setErr] = useState("");
@@ -31,7 +23,7 @@ export default function Triggers() {
   const [showAdd, setShowAdd] = useState(false);
   const [saving, setSaving] = useState(false);
   const [newT, setNewT] = useState({
-    name: "", category: "Mémoire", description: "", examples: "", reaction: "",
+    name: "", category: "Créativité", description: "", examples: "", reaction: "",
     tools: ["", "", ""],
   });
 
@@ -40,8 +32,9 @@ export default function Triggers() {
     setErr("");
     try {
       const res = await apiFetch("/mental/triggers/");
-      if (!res.ok) throw new Error("Impossible de charger les déclencheurs");
-      setTriggers(await res.json());
+      if (!res.ok) throw new Error("Impossible de charger les ancres");
+      const all = await res.json();
+      setTriggers(all.filter((t) => t.is_positive));
     } catch (e) {
       setErr(e.message);
     } finally {
@@ -51,10 +44,9 @@ export default function Triggers() {
 
   useEffect(() => { load(); }, []);
 
-  const negatives = useMemo(() => triggers.filter((t) => !t.is_positive), [triggers]);
   const filtered = useMemo(
-    () => cat === "Tous" ? negatives : negatives.filter((t) => t.category === cat),
-    [negatives, cat]
+    () => cat === "Tous" ? triggers : triggers.filter((t) => t.category === cat),
+    [triggers, cat]
   );
 
   async function saveTrigger() {
@@ -64,11 +56,15 @@ export default function Triggers() {
     try {
       const res = await apiFetch("/mental/triggers/", {
         method: "POST",
-        body: JSON.stringify({ ...newT, tools: newT.tools.filter((t) => t.trim()) }),
+        body: JSON.stringify({
+          ...newT,
+          tools: newT.tools.filter((t) => t.trim()),
+          is_positive: true,
+        }),
       });
       if (!res.ok) throw new Error("Création échouée");
       setShowAdd(false);
-      setNewT({ name: "", category: "Mémoire", description: "", examples: "", reaction: "", tools: ["", "", ""] });
+      setNewT({ name: "", category: "Créativité", description: "", examples: "", reaction: "", tools: ["", "", ""] });
       await load();
     } catch (e) {
       setErr(e.message);
@@ -78,38 +74,22 @@ export default function Triggers() {
   }
 
   async function deleteTrigger(id) {
-    if (!confirm("Supprimer ce déclencheur ?")) return;
+    if (!confirm("Supprimer cette ancre ?")) return;
     await apiFetch(`/mental/triggers/${id}/`, { method: "DELETE" });
     await load();
   }
 
-  const inputCls = "mt-1 w-full bg-[rgb(var(--panel2))] border border-[rgb(var(--border))] px-3 py-2 text-sm text-[rgb(var(--text))] outline-none focus:border-[rgb(var(--gold))] font-mono transition";
+  const inputCls = "mt-1 w-full bg-[rgb(var(--panel2))] border border-[rgb(var(--border))] px-3 py-2 text-sm text-[rgb(var(--text))] outline-none focus:border-[rgb(var(--emerald))] font-mono transition";
 
   return (
     <Shell>
       <div className="mb-8">
         <div className="text-xs font-mono tracking-[0.35em] text-[rgb(var(--muted))] uppercase">Base de données</div>
-        <h1 className="mt-2 font-display text-5xl text-[rgb(var(--text))]">Déclencheurs</h1>
-        <div className="mt-3 h-px w-28 bg-[rgb(var(--gold))]" />
-      </div>
-
-      {/* Precursor chain */}
-      <div className="mb-8 border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-5">
-        <div className="text-xs font-mono tracking-widest text-[rgb(var(--muted))] uppercase mb-4">
-          Chaîne d'escalade — intervenir à 1 ou 2
-        </div>
-        <div className="grid grid-cols-5 gap-2">
-          {PRECURSOR_CHAIN.map((p) => (
-            <div
-              key={p.level}
-              className="bg-[rgb(var(--panel2))] p-3 text-center"
-              style={{ borderTop: `2px solid ${p.color}` }}
-            >
-              <div className="font-display text-2xl" style={{ color: p.color }}>{p.level}</div>
-              <div className="mt-1 text-xs text-[rgb(var(--muted))] leading-tight">{p.label}</div>
-            </div>
-          ))}
-        </div>
+        <h1 className="mt-2 font-display text-5xl text-[rgb(var(--text))]">Ancres positives</h1>
+        <div className="mt-3 h-px w-28 bg-[rgb(var(--emerald))]" />
+        <p className="mt-4 text-sm text-[rgb(var(--muted))] leading-relaxed max-w-xl">
+          Ce qui te stabilise, te ressource, te ramène à toi. Les logger crée une base de preuves contre le bruit mental.
+        </p>
       </div>
 
       {err ? (
@@ -125,7 +105,7 @@ export default function Triggers() {
             className="px-3 py-1 text-xs font-mono tracking-wider border transition"
             style={
               cat === c
-                ? { background: CAT_COLORS[c] || "rgb(var(--accent))", borderColor: "transparent", color: "#fff" }
+                ? { background: CAT_COLORS[c] || "rgb(var(--emerald))", borderColor: "transparent", color: "#fff" }
                 : { background: "transparent", borderColor: "rgb(var(--border))", color: "rgb(var(--muted))" }
             }
           >
@@ -134,18 +114,18 @@ export default function Triggers() {
         ))}
       </div>
 
-      {/* Trigger list */}
+      {/* Anchor list */}
       <div className="space-y-2">
         {loading ? (
           <div className="py-16 text-center text-sm text-[rgb(var(--muted))] font-mono">Chargement...</div>
         ) : filtered.length === 0 ? (
-          <div className="py-16 text-center text-sm text-[rgb(var(--muted))] font-mono italic">Aucun déclencheur dans cette catégorie.</div>
+          <div className="py-16 text-center text-sm text-[rgb(var(--muted))] font-mono italic">Aucune ancre dans cette catégorie.</div>
         ) : (
           filtered.map((t) => (
             <div
               key={t.id}
               className="border border-[rgb(var(--border))] bg-[rgb(var(--panel))] overflow-hidden"
-              style={{ borderLeft: `3px solid ${CAT_COLORS[t.category] || "rgb(var(--accent))"}` }}
+              style={{ borderLeft: `3px solid ${CAT_COLORS[t.category] || "rgb(var(--emerald))"}` }}
             >
               <div
                 onClick={() => setExpanded(expanded === t.id ? null : t.id)}
@@ -178,17 +158,21 @@ export default function Triggers() {
                   )}
                   {t.reaction && (
                     <div className="mt-4">
-                      <div className="text-xs font-mono tracking-widest text-red-700/80 uppercase mb-1">Réaction typique</div>
+                      <div className="text-xs font-mono tracking-widest uppercase mb-1" style={{ color: CAT_COLORS[t.category] || "rgb(var(--emerald))", opacity: 0.8 }}>
+                        Ce que ça produit
+                      </div>
                       <div className="text-sm text-[rgb(var(--text))]">{t.reaction}</div>
                     </div>
                   )}
                   {t.tools?.length > 0 && (
                     <div className="mt-4">
-                      <div className="text-xs font-mono tracking-widest text-[rgb(var(--gold))] uppercase mb-3">Outils</div>
+                      <div className="text-xs font-mono tracking-widest uppercase mb-3" style={{ color: CAT_COLORS[t.category] || "rgb(var(--emerald))" }}>
+                        Notes
+                      </div>
                       <ul className="space-y-2">
                         {t.tools.map((tool, i) => (
                           <li key={i} className="flex gap-3 text-sm">
-                            <span className="text-[rgb(var(--gold))] flex-shrink-0 mt-0.5">›</span>
+                            <span className="flex-shrink-0 mt-0.5" style={{ color: CAT_COLORS[t.category] || "rgb(var(--emerald))" }}>›</span>
                             <span className="text-[rgb(var(--text))] leading-relaxed">{tool}</span>
                           </li>
                         ))}
@@ -210,21 +194,22 @@ export default function Triggers() {
         )}
       </div>
 
-      {/* Add trigger */}
+      {/* Add anchor */}
       {!showAdd ? (
         <button
           onClick={() => setShowAdd(true)}
-          className="mt-6 w-full py-3 border border-dashed border-[rgb(var(--border))] text-xs font-mono tracking-widest text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] hover:border-[rgb(var(--gold))] transition uppercase"
+          className="mt-6 w-full py-3 border border-dashed text-xs font-mono tracking-widest text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] transition uppercase"
+          style={{ borderColor: "rgb(var(--emerald))" }}
         >
-          + Ajouter un déclencheur personnel
+          + Ajouter une ancre personnelle
         </button>
       ) : (
         <div className="mt-6 border border-[rgb(var(--border))] bg-[rgb(var(--panel))] p-5">
-          <div className="text-xs font-mono tracking-widest text-[rgb(var(--gold))] uppercase mb-5">
-            Nouveau déclencheur
+          <div className="text-xs font-mono tracking-widest uppercase mb-5" style={{ color: "rgb(var(--emerald))" }}>
+            Nouvelle ancre
           </div>
           <div className="space-y-4">
-            {[["Nom *", "name", false], ["Description", "description", false], ["Exemples", "examples", false], ["Réaction typique", "reaction", false]].map(([label, key]) => (
+            {[["Nom *", "name"], ["Description", "description"], ["Exemples", "examples"], ["Ce que ça produit", "reaction"]].map(([label, key]) => (
               <div key={key}>
                 <label className="text-xs font-mono tracking-wider text-[rgb(var(--muted))] uppercase">{label}</label>
                 <input
@@ -249,12 +234,12 @@ export default function Triggers() {
             </div>
 
             <div>
-              <label className="text-xs font-mono tracking-wider text-[rgb(var(--muted))] uppercase">Outils (1–3)</label>
+              <label className="text-xs font-mono tracking-wider text-[rgb(var(--muted))] uppercase">Notes (1–3)</label>
               {newT.tools.map((tool, i) => (
                 <input
                   key={i}
                   value={tool}
-                  placeholder={`Outil ${i + 1}`}
+                  placeholder={`Note ${i + 1}`}
                   onChange={(e) => {
                     const t = [...newT.tools];
                     t[i] = e.target.value;
@@ -269,7 +254,8 @@ export default function Triggers() {
               <button
                 onClick={saveTrigger}
                 disabled={saving || !newT.name.trim()}
-                className="px-6 py-2.5 bg-[rgb(var(--accent))] text-white text-xs font-mono tracking-widest uppercase hover:bg-[rgb(var(--accent-dark))] disabled:opacity-50 transition"
+                className="px-6 py-2.5 text-white text-xs font-mono tracking-widest uppercase disabled:opacity-50 transition"
+                style={{ background: "rgb(var(--emerald))" }}
               >
                 {saving ? "..." : "Sauvegarder"}
               </button>

@@ -137,6 +137,98 @@ DEFAULTS = [
     },
 ]
 
+POSITIVES = [
+    {
+        "name": "État de flow",
+        "category": "Créativité",
+        "description": "Moment où tu es complètement absorbé par une tâche — temps suspendu, friction zéro.",
+        "examples": "Code qui tourne, écriture fluide, projet qui prend forme",
+        "reaction": "Énergie calme, concentration sans effort, satisfaction spontanée",
+        "tools": [
+            "Noter ce qui a permis cet état (heure, contexte, type de tâche)",
+            "Essayer de reproduire les conditions la prochaine fois",
+            "Ne pas interrompre inutilement — protéger la fenêtre",
+        ],
+    },
+    {
+        "name": "Connexion humaine réelle",
+        "category": "Social",
+        "description": "Un échange où tu t'es senti compris, présent, sans masque.",
+        "examples": "Conversation profonde, rire partagé, aide spontanée donnée ou reçue",
+        "reaction": "Légèreté, sentiment d'appartenance, énergie restaurée",
+        "tools": [
+            "Enregistrer avec qui — les gens ressource méritent d'être identifiés",
+            "Ce genre d'échange est rare : ne pas le minimiser",
+        ],
+    },
+    {
+        "name": "Accomplissement concret",
+        "category": "Efficacité",
+        "description": "T'as fini un truc. Vraiment fini. Pas juste avancé — fini.",
+        "examples": "Feature déployée, dossier envoyé, objectif coché",
+        "reaction": "Satisfaction brève mais réelle, preuve que tu peux",
+        "tools": [
+            "Logger même les petits — le cerveau a besoin de preuves accumulées",
+            "Résister à l'envie de passer directement à la suite sans marquer le moment",
+        ],
+    },
+    {
+        "name": "Mouvement physique choisi",
+        "category": "Corps",
+        "description": "Tu as bougé parce que t'en avais envie ou besoin — pas par obligation.",
+        "examples": "Marche, sport, étirements, sortie air frais",
+        "reaction": "Tête plus légère, corps présent, rumination réduite",
+        "tools": [
+            "Note la durée et l'effet — utile pour calibrer la dose minimum efficace",
+            "Même 15 minutes comptent",
+        ],
+    },
+    {
+        "name": "Ancre sensorielle",
+        "category": "Présence",
+        "description": "Un moment sensoriel simple qui t'a ramené dans le présent.",
+        "examples": "Café chaud, musique qui touche juste, lumière du matin, odeur particulière",
+        "reaction": "Apaisement, ralentissement, sortie du mental",
+        "tools": [
+            "Identifier tes ancres récurrentes — elles sont reproductibles à volonté",
+            "Utiliser délibérément en début de journée difficile",
+        ],
+    },
+    {
+        "name": "Reconnaissance reçue",
+        "category": "Estime",
+        "description": "Quelqu'un a reconnu ton travail, ta valeur ou ton évolution.",
+        "examples": "Retour positif client, compliment sincère, résultat qui parle de lui-même",
+        "reaction": "Surprise souvent, chaleur, légère validation de ce qu'on sait déjà",
+        "tools": [
+            "Logger mot pour mot si possible — à relire quand l'estime baisse",
+            "Ne pas minimiser ni surestimer : juste enregistrer",
+        ],
+    },
+    {
+        "name": "Moment de calme sans culpabilité",
+        "category": "Présence",
+        "description": "Du vide assumé — repos sans sentiment de devoir faire autre chose.",
+        "examples": "Film, sieste, rien de particulier mais sans combat intérieur",
+        "reaction": "Restauration, capacité à reprendre ensuite, tête reposée",
+        "tools": [
+            "C'est une ressource, pas une perte de temps — noter quand ça arrive",
+            "Observer ce qui a permis d'y accéder sans culpabilité cette fois",
+        ],
+    },
+    {
+        "name": "Clarté soudaine",
+        "category": "Identité",
+        "description": "Un moment où tu sais exactement ce que tu veux ou qui tu es.",
+        "examples": "Décision évidente, cap retrouvé, réponse qui émerge seule",
+        "reaction": "Soulagement, énergie directionnelle, moins de bruit mental",
+        "tools": [
+            "Écrire la clarté immédiatement — elle s'efface vite",
+            "C'est du signal pur : ne pas le rationaliser, juste l'enregistrer",
+        ],
+    },
+]
+
 
 class Command(BaseCommand):
     help = "Seed default triggers"
@@ -147,8 +239,19 @@ class Command(BaseCommand):
             _, is_new = Trigger.objects.get_or_create(
                 name=data["name"],
                 is_default=True,
-                defaults={**data, "user": None, "is_default": True},
+                defaults={**data, "user": None, "is_default": True, "is_positive": False},
             )
             if is_new:
                 created += 1
-        self.stdout.write(self.style.SUCCESS(f"Done. {created} triggers created ({len(DEFAULTS) - created} already existed)."))
+        for data in POSITIVES:
+            _, is_new = Trigger.objects.get_or_create(
+                name=data["name"],
+                is_default=True,
+                defaults={**data, "user": None, "is_default": True, "is_positive": True},
+            )
+            if is_new:
+                created += 1
+        total = len(DEFAULTS) + len(POSITIVES)
+        self.stdout.write(self.style.SUCCESS(
+            f"Done. {created} triggers created ({total - created} already existed)."
+        ))
