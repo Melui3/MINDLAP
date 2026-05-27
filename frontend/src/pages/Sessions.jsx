@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Shell from "../components/Shell";
 import { apiFetch } from "../api/apiFetch";
-import { useAuth } from "../auth/AuthContext";
 
 function Card({ title, subtitle, right, children }) {
   return (
@@ -50,8 +49,7 @@ function getSession(wk, type) {
 }
 
 export default function Sessions() {
-  const { user } = useAuth();
-  const isAdmin = !!user?.is_staff;
+  const isAdmin = false;
 
   const [asUser, setAsUser] = useState("");
   const [activeAs, setActiveAs] = useState("");

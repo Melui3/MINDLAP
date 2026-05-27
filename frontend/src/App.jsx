@@ -1,8 +1,5 @@
 import React from "react";
 import { Routes, Route } from "react-router-dom";
-import RequireAuth from "./auth/RequireAuth";
-import Login from "./pages/Login";
-import Register from "./pages/Register";
 import Triggers from "./pages/Triggers";
 import Anchors from "./pages/Anchors";
 import LogEpisode from "./pages/LogEpisode";
@@ -12,14 +9,11 @@ import SOS from "./pages/SOS";
 export default function App() {
   return (
     <Routes>
-      <Route path="/login" element={<Login />} />
-      <Route path="/register" element={<Register />} />
-
-      <Route path="/" element={<RequireAuth><Triggers /></RequireAuth>} />
-      <Route path="/anchors" element={<RequireAuth><Anchors /></RequireAuth>} />
-      <Route path="/log" element={<RequireAuth><LogEpisode /></RequireAuth>} />
-      <Route path="/history" element={<RequireAuth><History /></RequireAuth>} />
-      <Route path="/sos" element={<RequireAuth><SOS /></RequireAuth>} />
+      <Route path="/" element={<Triggers />} />
+      <Route path="/anchors" element={<Anchors />} />
+      <Route path="/log" element={<LogEpisode />} />
+      <Route path="/history" element={<History />} />
+      <Route path="/sos" element={<SOS />} />
 
       <Route
         path="*"

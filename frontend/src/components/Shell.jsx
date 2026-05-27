@@ -1,9 +1,7 @@
 import React from "react";
 import { Link, useLocation } from "react-router-dom";
-import { useAuth } from "../auth/AuthContext";
 
 export default function Shell({ children }) {
-  const { user, logout } = useAuth();
   const loc = useLocation();
 
   const isActive = (to) => {
@@ -53,15 +51,6 @@ export default function Shell({ children }) {
             <Nav to="/sos" label="⚠ SOS" danger />
           </nav>
 
-          <div className="flex items-center gap-3">
-            <div className="text-xs font-mono text-[rgb(var(--muted))]">{user?.username}</div>
-            <button
-              onClick={logout}
-              className="text-xs font-mono text-[rgb(var(--muted))] hover:text-[rgb(var(--text))] border border-[rgb(var(--border))] px-3 py-1.5 transition"
-            >
-              Quitter
-            </button>
-          </div>
         </div>
       </header>
 

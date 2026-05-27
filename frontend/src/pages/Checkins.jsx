@@ -1,7 +1,6 @@
 import React, { useEffect, useMemo, useState } from "react";
 import Shell from "../components/Shell";
 import { apiFetch } from "../api/apiFetch";
-import { useAuth } from "../auth/AuthContext";
 
 function ToneBadge({ tone, children }) {
   const cls =
@@ -47,8 +46,7 @@ function clamp(n) {
 }
 
 export default function Checkins() {
-  const { user } = useAuth();
-  const isAdmin = !!user?.is_staff;
+  const isAdmin = false;
 
   const [asUser, setAsUser] = useState("");
   const [activeAs, setActiveAs] = useState("");
