@@ -6,7 +6,7 @@ from django.db.models import Q, Count, Avg
 
 from .models import Trigger, TriggerLog
 from .serializers import TriggerSerializer, TriggerLogSerializer
-from utils import get_default_user
+from utils import get_default_user, is_demo_request
 
 
 class TriggerListView(APIView):
@@ -14,7 +14,10 @@ class TriggerListView(APIView):
 
     def get(self, request):
         user = get_default_user(request)
-        triggers = Trigger.objects.filter(Q(is_default=True) | Q(user=user))
+        if is_demo_request(request):
+            triggers = Trigger.objects.filter(user=user)
+        else:
+            triggers = Trigger.objects.filter(Q(is_default=True) | Q(user=user))
         return Response(TriggerSerializer(triggers, many=True).data)
 
     def post(self, request):

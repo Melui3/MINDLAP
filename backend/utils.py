@@ -20,6 +20,10 @@ def is_owner_request(request):
     return request.META.get(OWNER_HEADER) == owner_key
 
 
+def is_demo_request(request):
+    return not is_owner_request(request)
+
+
 def get_default_user(request=None):
     demo_username = getattr(settings, "MINDLAP_DEMO_USERNAME", "demo")
     owner_username = getattr(settings, "MINDLAP_OWNER_USERNAME", "")
