@@ -49,6 +49,7 @@ function getSession(wk, type) {
 }
 
 export default function Sessions() {
+  const user = { username: "default" };
   const isAdmin = false;
 
   const [asUser, setAsUser] = useState("");

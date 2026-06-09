@@ -105,7 +105,6 @@ export default function Dashboard() {
   const isAdmin = !!me?.is_staff;
 
   const queryAs = isAdmin && activeAs ? `?as=${encodeURIComponent(activeAs)}` : "";
-  const queryAsAmp = isAdmin && activeAs ? `&as=${encodeURIComponent(activeAs)}` : "";
 
   async function loadAll(nextAs = activeAs) {
     setErr("");

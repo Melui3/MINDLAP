@@ -10,6 +10,15 @@ const ANCHORS = [
   "T'as survécu à 100% de tes pires journées jusqu'ici.",
 ];
 
+const EARLY_PROTOCOL = [
+  "Fermer l'app qui aspire le cerveau.",
+  "Boire quelque chose.",
+  "Changer de piece.",
+  "Lancer une ancre positive.",
+  "Noter 1 phrase.",
+  "Ne pas decider de sa vie maintenant.",
+];
+
 const SIGNALS = [
   "'Ça sert à rien de continuer'",
   "'Personne peut m'aimer'",
@@ -27,6 +36,23 @@ export default function SOS() {
       </div>
 
       <div className="max-w-xl space-y-6">
+
+        {/* Niveau 1-2 */}
+        <div className="border border-[rgb(var(--gold))] bg-yellow-950/15 p-5">
+          <div className="text-xs font-mono tracking-widest text-[rgb(var(--gold))] uppercase mb-4">
+            Si je suis niveau 1-2
+          </div>
+          <div className="space-y-2">
+            {EARLY_PROTOCOL.map((step, i) => (
+              <div
+                key={i}
+                className="border-l-2 border-[rgb(var(--gold))] bg-[rgb(var(--panel))] px-4 py-2.5 text-sm text-[rgb(var(--text))] leading-relaxed"
+              >
+                {step}
+              </div>
+            ))}
+          </div>
+        </div>
 
         {/* 3114 */}
         <div className="border-2 border-red-800 bg-red-950/20 p-6">

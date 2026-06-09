@@ -1,5 +1,25 @@
-import React from "react";
+﻿import React from "react";
 import { Link, useLocation } from "react-router-dom";
+
+function NavItem({ to, label, danger = false, active }) {
+  return (
+    <Link
+      to={to}
+      className={[
+        "px-3 py-1.5 text-sm font-mono tracking-wider transition border-b-2",
+        danger
+          ? active
+            ? "border-red-600 text-red-400"
+            : "border-transparent text-red-800 hover:text-red-500"
+          : active
+          ? "border-[rgb(var(--gold))] text-[rgb(var(--text))]"
+          : "border-transparent text-[rgb(var(--muted))] hover:text-[rgb(var(--text))]",
+      ].join(" ")}
+    >
+      {label}
+    </Link>
+  );
+}
 
 export default function Shell({ children }) {
   const loc = useLocation();
@@ -7,27 +27,6 @@ export default function Shell({ children }) {
   const isActive = (to) => {
     if (to === "/") return loc.pathname === "/";
     return loc.pathname === to || loc.pathname.startsWith(to + "/");
-  };
-
-  const Nav = ({ to, label, danger = false }) => {
-    const active = isActive(to);
-    return (
-      <Link
-        to={to}
-        className={[
-          "px-3 py-1.5 text-sm font-mono tracking-wider transition border-b-2",
-          danger
-            ? active
-              ? "border-red-600 text-red-400"
-              : "border-transparent text-red-800 hover:text-red-500"
-            : active
-            ? "border-[rgb(var(--gold))] text-[rgb(var(--text))]"
-            : "border-transparent text-[rgb(var(--muted))] hover:text-[rgb(var(--text))]",
-        ].join(" ")}
-      >
-        {label}
-      </Link>
-    );
   };
 
   return (
@@ -44,11 +43,12 @@ export default function Shell({ children }) {
           </div>
 
           <nav className="flex items-center gap-1">
-            <Nav to="/" label="Déclencheurs" />
-            <Nav to="/anchors" label="Ancres" />
-            <Nav to="/log" label="Logger" />
-            <Nav to="/history" label="Historique" />
-            <Nav to="/sos" label="⚠ SOS" danger />
+            <NavItem to="/" label="Déclencheurs" active={isActive("/")} />
+            <NavItem to="/anchors" label="Ancres" active={isActive("/anchors")} />
+            <NavItem to="/log" label="Logger" active={isActive("/log")} />
+            <NavItem to="/checkins" label="Daily log" active={isActive("/checkins")} />
+            <NavItem to="/history" label="Historique" active={isActive("/history")} />
+            <NavItem to="/sos" label="⚠ SOS" danger active={isActive("/sos")} />
           </nav>
 
         </div>
@@ -58,3 +58,4 @@ export default function Shell({ children }) {
     </div>
   );
 }
+

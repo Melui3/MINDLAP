@@ -39,13 +39,39 @@ const TAGS = [
   "race-weekend",
 ];
 
+const MODE_OPTIONS = [
+  { value: "stable", label: "Stable" },
+  { value: "surcharge", label: "Surcharge" },
+  { value: "fuite_scroll", label: "Fuite / scroll" },
+  { value: "analyse_intense", label: "Analyse intense" },
+  { value: "vide_extinction", label: "Vide / extinction" },
+  { value: "elan_creatif", label: "Elan creatif" },
+  { value: "passion_vivant", label: "Passion / vivant" },
+];
+
+const NEED_OPTIONS = [
+  { value: "repos", label: "repos" },
+  { value: "silence", label: "silence" },
+  { value: "parler", label: "parler" },
+  { value: "creer", label: "creer" },
+  { value: "bouger", label: "bouger" },
+  { value: "manger_boire", label: "manger/boire" },
+  { value: "etre_rassure", label: "etre rassure" },
+  { value: "juste_tenir", label: "juste tenir" },
+];
+
 function clamp(n) {
   const x = Number(n);
   if (Number.isNaN(x)) return 50;
   return Math.max(0, Math.min(100, x));
 }
 
+function optionLabel(options, value) {
+  return options.find((option) => option.value === value)?.label || "";
+}
+
 export default function Checkins() {
+  const user = { username: "default" };
   const isAdmin = false;
 
   const [asUser, setAsUser] = useState("");
@@ -68,6 +94,8 @@ export default function Checkins() {
   const [confidence, setConfidence] = useState(70);
   const [fatigue, setFatigue] = useState(40);
   const [sleep, setSleep] = useState(65);
+  const [currentMode, setCurrentMode] = useState("");
+  const [currentNeed, setCurrentNeed] = useState("");
   const [notes, setNotes] = useState("");
   const [tags, setTags] = useState([]);
 
@@ -114,6 +142,8 @@ export default function Checkins() {
         confidence: clamp(confidence),
         fatigue: clamp(fatigue),
         sleep: clamp(sleep),
+        current_mode: currentMode,
+        current_need: currentNeed,
         notes: notes?.trim() || "",
         tags,
       };
@@ -130,6 +160,8 @@ export default function Checkins() {
 
       setNotes("");
       setTags([]);
+      setCurrentMode("");
+      setCurrentNeed("");
       await load();
     } catch (e) {
       setErr(e?.message || "Create failed");
@@ -145,7 +177,9 @@ export default function Checkins() {
         !qq ||
         (x.notes || "").toLowerCase().includes(qq) ||
         (x.date || "").includes(qq) ||
-        (x.tags || []).join(" ").toLowerCase().includes(qq);
+        (x.tags || []).join(" ").toLowerCase().includes(qq) ||
+        optionLabel(MODE_OPTIONS, x.current_mode).toLowerCase().includes(qq) ||
+        optionLabel(NEED_OPTIONS, x.current_need).toLowerCase().includes(qq);
 
       const matchesTag = !tagFilter || (x.tags || []).includes(tagFilter);
       return matchesQ && matchesTag;
@@ -266,6 +300,34 @@ export default function Checkins() {
             </div>
           </div>
 
+          <div>
+            <label className="text-xs text-[rgb(var(--muted))]">Mode actuel</label>
+            <select
+              className="mt-1 w-full rounded-xl bg-[rgb(var(--bg))] border border-[rgb(var(--border))] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[rgb(var(--ferrari)/0.35)]"
+              value={currentMode}
+              onChange={(e) => setCurrentMode(e.target.value)}
+            >
+              <option value="">Choisir un mode</option>
+              {MODE_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
+
+          <div>
+            <label className="text-xs text-[rgb(var(--muted))]">Besoin maintenant</label>
+            <select
+              className="mt-1 w-full rounded-xl bg-[rgb(var(--bg))] border border-[rgb(var(--border))] px-3 py-2 text-sm outline-none focus:ring-2 focus:ring-[rgb(var(--ferrari)/0.35)]"
+              value={currentNeed}
+              onChange={(e) => setCurrentNeed(e.target.value)}
+            >
+              <option value="">Choisir un besoin</option>
+              {NEED_OPTIONS.map((option) => (
+                <option key={option.value} value={option.value}>{option.label}</option>
+              ))}
+            </select>
+          </div>
+
           {[
             ["Focus", focus, setFocus],
             ["Stress", stress, setStress],
@@ -374,6 +436,17 @@ export default function Checkins() {
                 </div>
               </div>
 
+              {x.current_mode || x.current_need ? (
+                <div className="mt-3 flex flex-wrap gap-2">
+                  {x.current_mode ? (
+                    <ToneBadge tone="muted">Mode: {optionLabel(MODE_OPTIONS, x.current_mode)}</ToneBadge>
+                  ) : null}
+                  {x.current_need ? (
+                    <ToneBadge tone="muted">Besoin: {optionLabel(NEED_OPTIONS, x.current_need)}</ToneBadge>
+                  ) : null}
+                </div>
+              ) : null}
+
               {x.notes ? (
                 <div className="mt-3 text-sm text-[rgb(var(--muted))] leading-relaxed">
                   {x.notes}
@@ -415,6 +488,17 @@ export default function Checkins() {
             Fatigue <span className="text-[rgb(var(--text))] font-semibold">{latest.fatigue}</span> •
             Sleep <span className="text-[rgb(var(--text))] font-semibold">{latest.sleep}</span>
           </div>
+
+          {latest.current_mode || latest.current_need ? (
+            <div className="mt-3 flex flex-wrap gap-2">
+              {latest.current_mode ? (
+                <ToneBadge tone="muted">Mode: {optionLabel(MODE_OPTIONS, latest.current_mode)}</ToneBadge>
+              ) : null}
+              {latest.current_need ? (
+                <ToneBadge tone="muted">Besoin: {optionLabel(NEED_OPTIONS, latest.current_need)}</ToneBadge>
+              ) : null}
+            </div>
+          ) : null}
         </div>
       ) : null}
     </Shell>

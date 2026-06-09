@@ -20,6 +20,25 @@ class PilotProfile(models.Model):
 
 
 class CheckIn(models.Model):
+    class CurrentMode(models.TextChoices):
+        STABLE = "stable", "Stable"
+        OVERLOAD = "surcharge", "Surcharge"
+        SCROLL_ESCAPE = "fuite_scroll", "Fuite / scroll"
+        DEEP_ANALYSIS = "analyse_intense", "Analyse intense"
+        SHUTDOWN = "vide_extinction", "Vide / extinction"
+        CREATIVE_MOMENTUM = "elan_creatif", "Elan creatif"
+        ALIVE_PASSION = "passion_vivant", "Passion / vivant"
+
+    class CurrentNeed(models.TextChoices):
+        REST = "repos", "repos"
+        SILENCE = "silence", "silence"
+        TALK = "parler", "parler"
+        CREATE = "creer", "creer"
+        MOVE = "bouger", "bouger"
+        FOOD_DRINK = "manger_boire", "manger/boire"
+        REASSURANCE = "etre_rassure", "etre rassure"
+        HOLD_ON = "juste_tenir", "juste tenir"
+
     user = models.ForeignKey(settings.AUTH_USER_MODEL, on_delete=models.CASCADE, related_name="checkins")
     date = models.DateField(default=timezone.localdate)
     admin_comment = models.TextField(blank=True, default="")
@@ -28,6 +47,8 @@ class CheckIn(models.Model):
     confidence = models.PositiveSmallIntegerField()
     fatigue = models.PositiveSmallIntegerField()
     sleep = models.PositiveSmallIntegerField()
+    current_mode = models.CharField(max_length=32, choices=CurrentMode.choices, blank=True, default="")
+    current_need = models.CharField(max_length=32, choices=CurrentNeed.choices, blank=True, default="")
 
     tags = models.JSONField(default=list, blank=True)   # ex: ["work", "training"]
     notes = models.TextField(blank=True, default="")

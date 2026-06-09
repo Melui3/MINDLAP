@@ -5,6 +5,7 @@ import Anchors from "./pages/Anchors";
 import LogEpisode from "./pages/LogEpisode";
 import History from "./pages/History";
 import SOS from "./pages/SOS";
+import Checkins from "./pages/Checkins";
 
 export default function App() {
   return (
@@ -12,6 +13,7 @@ export default function App() {
       <Route path="/" element={<Triggers />} />
       <Route path="/anchors" element={<Anchors />} />
       <Route path="/log" element={<LogEpisode />} />
+      <Route path="/checkins" element={<Checkins />} />
       <Route path="/history" element={<History />} />
       <Route path="/sos" element={<SOS />} />
 

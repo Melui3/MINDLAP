@@ -13,7 +13,7 @@ class CheckInSerializer(serializers.ModelSerializer):
         model = CheckIn
         fields = [
             "id","date","focus","stress","confidence","fatigue","sleep",
-            "tags","notes","admin_comment","created_at"
+            "current_mode","current_need","tags","notes","admin_comment","created_at"
         ]
         read_only_fields = ["id","created_at"]
 
