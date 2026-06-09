@@ -9,6 +9,9 @@ load_dotenv(BASE_DIR / ".env")
 SECRET_KEY = os.getenv("DJANGO_SECRET_KEY", "dev-secret")
 DEBUG = os.getenv("DJANGO_DEBUG", "0") == "1"
 ALLOWED_HOSTS = ["*"]
+MINDLAP_OWNER_KEY = os.getenv("MINDLAP_OWNER_KEY", "")
+MINDLAP_OWNER_USERNAME = os.getenv("MINDLAP_OWNER_USERNAME", "")
+MINDLAP_DEMO_USERNAME = os.getenv("MINDLAP_DEMO_USERNAME", "demo")
 
 INSTALLED_APPS = [
     "django.contrib.admin",

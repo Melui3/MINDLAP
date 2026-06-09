@@ -104,6 +104,18 @@ L’historique permet de revenir sur les entrées précédentes et d’observer 
 
 La page SOS sert d’espace rapide en cas de surcharge ou de moment difficile, avec l’idée d’accéder vite aux ressources utiles.
 
+### Mode demo / session privee
+
+Par defaut, les visiteurs utilisent l'utilisateur `demo`. Tes donnees privees restent separees.
+
+Pour acceder a ta session privee, configure `MINDLAP_OWNER_KEY` cote backend, puis ouvre l'app une fois avec :
+
+```txt
+?owner_key=ta-cle-privee
+```
+
+La cle est stockee dans le `localStorage` de ton navigateur et envoyee dans le header `X-Mindlap-Owner-Key`.
+
 ## Structure du projet
 
 ```txt

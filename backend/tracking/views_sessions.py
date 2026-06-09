@@ -11,7 +11,7 @@ from utils import get_default_user
 @api_view(["GET"])
 @permission_classes([AllowAny])
 def sessions_list(request):
-    target = get_default_user()
+    target = get_default_user(request)
 
     qs = (
         RaceWeekend.objects

@@ -13,14 +13,14 @@ class TriggerListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        user = get_default_user()
+        user = get_default_user(request)
         triggers = Trigger.objects.filter(Q(is_default=True) | Q(user=user))
         return Response(TriggerSerializer(triggers, many=True).data)
 
     def post(self, request):
         s = TriggerSerializer(data=request.data)
         if s.is_valid():
-            s.save(user=get_default_user(), is_default=False)
+            s.save(user=get_default_user(request), is_default=False)
             return Response(s.data, status=status.HTTP_201_CREATED)
         return Response(s.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -30,7 +30,7 @@ class TriggerDetailView(APIView):
 
     def delete(self, request, pk):
         try:
-            t = Trigger.objects.get(pk=pk, user=get_default_user())
+            t = Trigger.objects.get(pk=pk, user=get_default_user(request))
         except Trigger.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         t.delete()
@@ -41,14 +41,14 @@ class TriggerLogListView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        user = get_default_user()
+        user = get_default_user(request)
         logs = TriggerLog.objects.filter(user=user).select_related("trigger")
         return Response(TriggerLogSerializer(logs, many=True).data)
 
     def post(self, request):
         s = TriggerLogSerializer(data=request.data)
         if s.is_valid():
-            s.save(user=get_default_user())
+            s.save(user=get_default_user(request))
             return Response(s.data, status=status.HTTP_201_CREATED)
         return Response(s.errors, status=status.HTTP_400_BAD_REQUEST)
 
@@ -58,7 +58,7 @@ class TriggerLogDetailView(APIView):
 
     def delete(self, request, pk):
         try:
-            log = TriggerLog.objects.get(pk=pk, user=get_default_user())
+            log = TriggerLog.objects.get(pk=pk, user=get_default_user(request))
         except TriggerLog.DoesNotExist:
             return Response(status=status.HTTP_404_NOT_FOUND)
         log.delete()
@@ -69,7 +69,7 @@ class StatsView(APIView):
     permission_classes = [AllowAny]
 
     def get(self, request):
-        user = get_default_user()
+        user = get_default_user(request)
         logs = TriggerLog.objects.filter(user=user).select_related("trigger")
         total = logs.count()
         avg_intensity = logs.aggregate(avg=Avg("intensity"))["avg"]

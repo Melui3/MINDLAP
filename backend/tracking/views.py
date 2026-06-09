@@ -11,7 +11,7 @@ class PilotProfileView(generics.RetrieveUpdateAPIView):
     serializer_class = PilotProfileSerializer
 
     def get_object(self):
-        user = get_default_user()
+        user = get_default_user(self.request)
         profile, _ = PilotProfile.objects.get_or_create(
             user=user,
             defaults={"alias": f"{user.username}_pilot"}
@@ -24,10 +24,10 @@ class CheckInListCreateView(generics.ListCreateAPIView):
     serializer_class = CheckInSerializer
 
     def get_queryset(self):
-        return CheckIn.objects.filter(user=get_default_user())
+        return CheckIn.objects.filter(user=get_default_user(self.request))
 
     def perform_create(self, serializer):
-        serializer.save(user=get_default_user())
+        serializer.save(user=get_default_user(self.request))
 
 
 class CheckInDetailView(generics.RetrieveUpdateDestroyAPIView):
@@ -35,4 +35,4 @@ class CheckInDetailView(generics.RetrieveUpdateDestroyAPIView):
     serializer_class = CheckInSerializer
 
     def get_queryset(self):
-        return CheckIn.objects.filter(user=get_default_user())
+        return CheckIn.objects.filter(user=get_default_user(self.request))

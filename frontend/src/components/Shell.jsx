@@ -1,5 +1,6 @@
-﻿import React from "react";
+﻿import React, { useEffect, useState } from "react";
 import { Link, useLocation } from "react-router-dom";
+import { apiFetch } from "../api/apiFetch";
 
 function NavItem({ to, label, danger = false, active }) {
   return (
@@ -23,11 +24,29 @@ function NavItem({ to, label, danger = false, active }) {
 
 export default function Shell({ children }) {
   const loc = useLocation();
+  const [sessionMode, setSessionMode] = useState("demo");
 
   const isActive = (to) => {
     if (to === "/") return loc.pathname === "/";
     return loc.pathname === to || loc.pathname.startsWith(to + "/");
   };
+
+  useEffect(() => {
+    let cancelled = false;
+
+    async function loadSessionMode() {
+      const res = await apiFetch("/me/");
+      if (!res.ok || cancelled) return;
+      const data = await res.json();
+      if (!cancelled) setSessionMode(data.mode || "demo");
+    }
+
+    loadSessionMode();
+
+    return () => {
+      cancelled = true;
+    };
+  }, []);
 
   return (
     <div className="min-h-screen bg-[rgb(var(--bg))] text-[rgb(var(--text))]">
@@ -38,6 +57,9 @@ export default function Shell({ children }) {
             <div className="text-xs font-mono text-[rgb(var(--muted))]">SYS://</div>
             <div className="font-display text-lg tracking-wide text-[rgb(var(--text))]">
               Telemetry
+            </div>
+            <div className="border border-[rgb(var(--border))] px-2 py-0.5 text-[10px] font-mono uppercase text-[rgb(var(--muted))]">
+              {sessionMode}
             </div>
             <div className="h-[2px] w-8 bg-[rgb(var(--gold))]" />
           </div>
