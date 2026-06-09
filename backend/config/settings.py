@@ -100,3 +100,15 @@ REST_FRAMEWORK = {
 _cors_raw = os.getenv("CORS_ALLOWED_ORIGINS", "https://melui3.github.io")
 CORS_ALLOWED_ORIGINS = [o.strip() for o in _cors_raw.split(",") if o.strip()]
 CORS_ALLOW_CREDENTIALS = True
+CORS_ALLOW_HEADERS = [
+    "accept",
+    "accept-encoding",
+    "authorization",
+    "content-type",
+    "dnt",
+    "origin",
+    "user-agent",
+    "x-csrftoken",
+    "x-requested-with",
+    "x-mindlap-owner-key",
+]
